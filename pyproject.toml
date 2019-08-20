@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "testing_competition"
+version = "0.1.0"
+description = "Discover who contributed most to your test base in a repo"
+authors = ["Gnonpi <legnonpi@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
