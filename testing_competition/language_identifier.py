@@ -1,4 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Generator, List, NamedTuple
+
+
+class BlameLine(NamedTuple):
+    hash: str
+    author: str
+    timestamp: str
+    content: str
 
 
 class LanguageTestIdentifier(ABC):
@@ -15,7 +23,7 @@ class LanguageTestIdentifier(ABC):
         pass
 
     @abstractmethod
-    def is_line_test_definition(self, file_line: str) -> bool:
+    def extract_test_functions(self, line_generator: Generator[str]) -> List[List[str]]:
         pass
 
 
@@ -32,8 +40,28 @@ class PythonTestIdentifier(LanguageTestIdentifier):
             return True
         return False
 
-    def is_line_test_definition(self, file_line):
-        if file_line.startswith('def test_'):
-            return True
-        return False
+    def extract_test_functions(self, blame_line_generator: Generator[BlameLine]) -> List[List[BlameLine]]:
+        def get_line_indent(raw_line):
+            return len(raw_line) - len(raw_line.lstrip())
+        result_tests = []
+        current_test_block = []
+        current_test_block_indent = None
+        has_started_test = False
+        for line in blame_line_generator:
+            stripped_line = line.content.lstrip()
+            if stripped_line.startswith('def test_'):
+                has_started_test = True
+                current_test_block = [line]
+                current_test_block_indent = get_line_indent(line.content)
+                continue
+            if has_started_test:
+                if get_line_indent(line.content) < current_test_block_indent or get_line_indent(line.content) == 0:
+                    has_started_test = False
+                    result_tests.append(current_test_block)
+                    current_test_block = []
+                    current_test_block_indent = None
+                else:
+                    current_test_block.append(line)
+
+        return result_tests
 
