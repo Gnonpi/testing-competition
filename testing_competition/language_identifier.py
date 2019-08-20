@@ -1,12 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Generator, List, NamedTuple
+from typing import Generator, List
 
-
-class BlameLine(NamedTuple):
-    hash: str
-    author: str
-    timestamp: str
-    content: str
+from testing_competition.custom_types import BlameLine
 
 
 class LanguageTestIdentifier(ABC):

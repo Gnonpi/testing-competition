@@ -1,50 +1,10 @@
-import glob
-import subprocess
-
 from pathlib import Path
 
 import click
-from typing import NamedTuple, List, Tuple
+from typing import List
 
-from testing_competition.language_identifier import PythonTestIdentifier
-
-
-class ContributorResult(NamedTuple):
-    """
-    Summary of contribution of one author
-    """
-    name: str
-    number_of_tests: int
-    percentage_of_tests: float
-
-
-def get_git_blame(path_test):
-    pass
-
-
-def find_test_base_contributors(path_directory: Path) -> Tuple[int, List[ContributorResult]]:
-    """
-    Given the path to a git repo, compute who wrote most tests
-    :param path_directory:
-    :return:
-    """
-    str_path_directory = str(path_directory.absolute())
-    python_identifier = PythonTestIdentifier()
-    for candidate_path in glob.iglob(str_path_directory + '/**/' + python_identifier.file_glob_pattern(),
-                                     recursive=True):
-        candidate_path = Path(candidate_path).absolute()
-        candidate_filename = candidate_path.name
-        if python_identifier.is_a_test_file(candidate_filename):
-            p = subprocess.Popen(['git', 'blame', candidate_path],
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE
-                                 )
-            out, err = p.communicate()
-            blame_lines = out.splitlines()
-            print(blame_lines)
-
-            import sys
-            sys.exit(1)
+from testing_competition.analyse_repo import find_test_base_contributors
+from testing_competition.custom_types import ContributorResult
 
 
 def print_contributor_results(total_tests: int, contributor_list: List[ContributorResult]):
