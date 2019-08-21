@@ -1,5 +1,9 @@
 # testing-competition
+ 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 Inspired by Spotify's testing-game, discover who contributed most to your test base
+
 
 ## Getting Started
 
@@ -48,7 +52,6 @@ vadim:
 Tests owned: 0 - 0.0%
 Tests associated with: 5 - 3.6%
 Written 6 test lines - 0.3%
-
 ```
 
 ## Running the tests
@@ -91,12 +94,13 @@ I'm only retaking the idea at my sauce.
 
 # TODOs
 Personal list of things I'd like to add:
-- a class that take ContributionCounter and do an output (stdout or file)
-- more language identifiers: Java, C, JS ? different test frameworks?
-- allow to tune language identifiers with config files (test_* vs *_test)
-- add pytest-cov and more tests :)
-- something better than parsing "git blame"?
-- test with different python versions via tox
-- provide a setup.py or requirements.txt (automated)
-- make true entrypoints
-- coding style
+* [ ] a class that take ContributionCounter and do an output (stdout or file)
+* [ ] more language identifiers: Java, C, JS ? different test frameworks?
+* [ ] allow to tune language identifiers with config files (test_* vs *_test)
+* [ ] add pytest-cov and more tests :)
+* [ ] something better than parsing "git blame"?
+* [ ] test with different python versions via tox
+* [ ] provide a setup.py or requirements.txt (automated)
+* [ ] make true entrypoints
+* [ ] coding style
+* [ ] add github badges
