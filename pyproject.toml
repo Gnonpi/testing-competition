@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testing_competition"
-version = "0.1.0"
+version = "0.1.1"
 description = "Discover who contributed most to your test base in a repo"
 authors = ["Gnonpi <legnonpi@gmail.com>"]
 
