@@ -18,7 +18,7 @@ class LanguageTestIdentifier(ABC):
         pass
 
     @abstractmethod
-    def extract_test_functions(self, line_generator: Generator[str]) -> List[List[str]]:
+    def extract_test_functions(self, line_generator: Generator[BlameLine, None, None]) -> List[List[str]]:
         pass
 
 
@@ -35,7 +35,7 @@ class PythonTestIdentifier(LanguageTestIdentifier):
             return True
         return False
 
-    def extract_test_functions(self, blame_line_generator: Generator[BlameLine]) -> List[List[BlameLine]]:
+    def extract_test_functions(self, blame_line_generator: Generator[BlameLine, None, None]) -> List[List[BlameLine]]:
         def get_line_indent(raw_line):
             return len(raw_line) - len(raw_line.lstrip())
         result_tests = []
