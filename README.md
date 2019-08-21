@@ -7,59 +7,70 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+To start using `testing_competition`,
+you're going to need at least:
+- Git
+- Python3.6+
 
-```
-Give examples
-```
+You can find instructions on how to install Git [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git),
+and instructions there for Python [here](https://www.python.org/downloads/).
+
+If you want to use Poetry to install the dependencies 
+(I recommend it),
+you can find infos [here](https://poetry.eustace.io/docs/#installation).
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+Assuming you're using Poetry 
+(if you don't [pip](https://pip.pypa.io/en/stable/) can work with the `pyproject.toml`),
+all you have to do to use it is:
 
 ```
-until finished
+$ cd testing_competition
+$ poetry install --no-dev
 ```
 
 End with an example of getting some data out of the system or using it for a little demo
 
+Once you get all installed, you can use it like that:
+
+```
+# assuming /path/to/repo is the path to the git repository with the tests you wanna analyse
+$ poetry run python testing_competition/entry_command /path/to/repo
+INFO:testing_competition:Starting to look for tests at: /path/to/repo
+INFO:testing_competition:Extracting test data from test_file_example.py
+....
+gnonpi:
+Tests owned: 17 - 12.1%
+Tests associated with: 17 - 12.1%
+Written 178 test lines - 9.6%
+vadim:
+Tests owned: 0 - 0.0%
+Tests associated with: 5 - 3.6%
+Written 6 test lines - 0.3%
+
+```
+
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Tests are meant to be via [pytest](https://pytest.org/en/latest/).
+Let's install the needed dependencies with Poetry:
 
 ```
-Give an example
+$ poetry install
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
+Then, simply run:
 ```
-Give an example
+$ poetry run pytest
 ```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Git](https://git-scm.com/) - The distributed version control system
+* [Poetry](https://git-scm.com/) - Python dependency management and packaging made easy
+* [Pytest](https://pytest.org/en/latest/) - The pytest framework makes it easy to write small tests, yet scales to support complex functional testing for applications and libraries
+* [Click](https://click.palletsprojects.com/en/7.x/) - Click is a Python package for creating beautiful command line interfaces in a composable way with as little code as necessary
 
 ## Contributing
 
@@ -85,3 +96,7 @@ Personal list of things I'd like to add:
 - allow to tune language identifiers with config files (test_* vs *_test)
 - add pytest-cov and more tests :)
 - something better than parsing "git blame"?
+- test with different python versions via tox
+- provide a setup.py or requirements.txt (automated)
+- make true entrypoints
+- coding style
