@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import click
@@ -5,6 +6,9 @@ from typing import List
 
 from testing_competition.analyse_repo import find_test_base_contributors
 from testing_competition.custom_types import ContributorResult
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('testing_competition')
 
 
 def print_contributor_results(total_tests: int, contributor_list: List[ContributorResult]):
