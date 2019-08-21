@@ -46,8 +46,8 @@ class PythonTestIdentifier(LanguageTestIdentifier):
         for line in blame_line_generator:
             stripped_line = line.content.lstrip()
             if stripped_line.startswith('def test_'):
-                current_test_name = stripped_line.replace('def test_', '')
-                current_test_name = current_test_name[current_test_name.index('('):]
+                current_test_name = stripped_line.replace('def ', '')
+                current_test_name = current_test_name[:current_test_name.index('(')]
                 has_started_test = True
                 current_test_block = [line]
                 current_test_block_indent = get_line_indent(line.content)

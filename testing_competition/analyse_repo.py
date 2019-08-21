@@ -1,5 +1,6 @@
 import glob
 import logging
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -9,23 +10,27 @@ from testing_competition.contribution_counter import ContributionCounter
 from testing_competition.custom_types import ContributorResult, BlameLine
 from testing_competition.language_identifier import PythonTestIdentifier
 
-RE_PARSE_BLAME = re.compile(r'(?P<commit_hash>.+) \((?P<commit_author>[^\s]+)\s{1,}(?P<commit_date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \+0200\s*(?P<line_number>\d+)\)(?P<content>.*)')
+RE_PARSE_BLAME = re.compile(r'(?P<commit_hash>.+) \((?P<commit_author>.+)\s{1,}(?P<commit_date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) [\+\-]\d{4}\s*(?P<line_number>\d+)\)(?P<content>.*)')
 NOT_COMMITTED_MSG = 'Not Committed Yet'
 
 
-def get_git_blame(path_test: Path) -> List[BlameLine]:
+def get_git_blame(git_directory: Path, path_test: Path) -> List[BlameLine]:
     """
     Use git blame on a file to see who edited it via BlameLine
     :param path_test:
     :return:
     """
+    logger = logging.getLogger('testing_competition')
+    old_cwd = Path(os.getcwd()).resolve().absolute()
+    os.chdir(git_directory)
+    logger.debug(path_test)
     p = subprocess.Popen(['git', 'blame', path_test],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE
                          )
     out, err = p.communicate()
-    print(out)
-    print(err)
+    if len(err) > 0:
+        logger.warning(err.decode('utf8'))
     raw_blame_lines = out.splitlines()
     blame_lines = []
     for raw_blame in raw_blame_lines:
@@ -43,6 +48,7 @@ def get_git_blame(path_test: Path) -> List[BlameLine]:
             int(match_blame['line_number']),
             match_blame['content']
         ))
+    os.chdir(old_cwd)
     return blame_lines
 
 
@@ -60,11 +66,18 @@ def find_test_base_contributors(path_directory: Path) -> Tuple[int, List[Contrib
     for candidate_path in glob.iglob(str_path_directory + '/**/' + python_identifier.file_glob_pattern(),
                                      recursive=True):
         # logger.debug(f"Considering '{candidate_path}'")
+
+        #
+        # Specific for Python
+        #
+        if 'venv' in candidate_path:
+            continue
+
         candidate_path = Path(candidate_path).absolute()
         candidate_filename = candidate_path.name
         if python_identifier.is_a_test_file(candidate_filename):
             logger.info(f'Extracting test data from {candidate_filename}')
-            blame_lines = get_git_blame(candidate_path)
+            blame_lines = get_git_blame(path_directory, candidate_path)
             list_tests = python_identifier.extract_test_functions(blame_lines)
             print(f'tests: {len(list_tests)}')
             contribution_counter.update_contributions(list_tests)
