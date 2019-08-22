@@ -27,7 +27,7 @@ class BlameLine(NamedTuple):
     """
     One line output from git blame
     """
-    hash: str
+    hash_commit: str
     author: str
     timestamp: str
     line_number: int

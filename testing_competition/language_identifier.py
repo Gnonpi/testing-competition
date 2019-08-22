@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator, List
+from typing import Generator, List, Iterable
 
 from testing_competition.custom_types import BlameLine, FunctionTest
 
@@ -18,7 +18,7 @@ class LanguageTestIdentifier(ABC):
         pass
 
     @abstractmethod
-    def extract_test_functions(self, line_generator: Generator[BlameLine, None, None]) -> List[FunctionTest]:
+    def extract_test_functions(self, line_generator: Iterable[BlameLine]) -> List[FunctionTest]:
         pass
 
 
@@ -35,7 +35,7 @@ class PythonTestIdentifier(LanguageTestIdentifier):
             return True
         return False
 
-    def extract_test_functions(self, blame_line_generator: Generator[BlameLine, None, None]) -> List[FunctionTest]:
+    def extract_test_functions(self, blame_line_generator: Iterable[BlameLine]) -> List[FunctionTest]:
         def get_line_indent(raw_line):
             return len(raw_line) - len(raw_line.lstrip())
         result_tests = []
@@ -63,6 +63,11 @@ class PythonTestIdentifier(LanguageTestIdentifier):
                     current_test_block_indent = None
                 else:
                     current_test_block.append(line)
+        if has_started_test:
+            result_tests.append(FunctionTest(
+                name_test=current_test_name,
+                list_lines=current_test_block)
+            )
 
         return result_tests
 
