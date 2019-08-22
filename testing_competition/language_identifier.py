@@ -48,9 +48,9 @@ class PythonTestIdentifier(LanguageTestIdentifier):
 
         for line in blame_line_generator:
             stripped_line = line.content.lstrip()
-            print(f"line: {line.content} ; +{get_line_indent(line.content)}")
+
+            # closing test function
             if has_started_test and get_line_indent(line.content) <= current_test_block_indent and stripped_line != '':
-                print(f"--> closing test function")
                 has_started_test = False
                 reverse_last_lines = copy.deepcopy(current_test_block)
                 reverse_last_lines.reverse()
@@ -66,8 +66,8 @@ class PythonTestIdentifier(LanguageTestIdentifier):
                 current_test_block = []
                 current_test_block_indent = None
 
+            # opening new test function
             if stripped_line.startswith('def test_'):
-                print(f"--> start test function")
                 current_test_name = stripped_line.replace('def ', '')
                 current_test_name = current_test_name[:current_test_name.index('(')]
                 has_started_test = True
@@ -75,12 +75,19 @@ class PythonTestIdentifier(LanguageTestIdentifier):
                 current_test_block_indent = get_line_indent(line.content)
                 continue
 
+            # adding line to current test function
             if has_started_test:
-                print(f"--> adding line")
                 current_test_block.append(line)
 
+        # add remaining lines
         if has_started_test:
-            print(f"--> adding remaining lines")
+            reverse_last_lines = copy.deepcopy(current_test_block)
+            reverse_last_lines.reverse()
+            for r in reverse_last_lines:
+                if r.content.strip() == '':
+                    current_test_block.pop(-1)
+                else:
+                    break
             result_tests.append(FunctionTest(
                 name_test=current_test_name,
                 list_lines=current_test_block)

@@ -106,4 +106,31 @@ def test_third():
         assert res[2].list_lines == third_function.list_lines
 
     def test_contain_test_class(self):
-        assert False
+        t_content = """
+import pytest
+
+print('ok')
+
+class TestSomething:
+    def test_first(self):
+        assert 1
+    
+    def test_second(self, client_fixture):
+        a = 1
+
+        b = 2
+                 
+        assert a + b == 3 
+        """
+        p = PythonTestIdentifier()
+        blames = TestExtractFunction._create_list_of_blames(t_content)
+        res = p.extract_test_functions(blames)
+        first_function = FunctionTest(name_test='test_first',
+                                      list_lines=blames[6:8])
+        second_function = FunctionTest(name_test='test_second',
+                                       list_lines=blames[9:15])
+        assert len(res) == 2
+        assert res[0].name_test == first_function.name_test
+        assert res[0].list_lines == first_function.list_lines
+        assert res[1].name_test == second_function.name_test
+        assert res[1].list_lines == second_function.list_lines
