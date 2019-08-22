@@ -69,3 +69,41 @@ def test_a():
         assert res[0].name_test == expected_function.name_test
         assert res[0].list_lines == expected_function.list_lines
 
+    def test_contain_multiple_tests(self):
+        t_content = """
+def test_first_test():
+    a = 1
+
+    assert a == 1
+    
+def test_second_test():
+    s = 0 
+    for i in range(4):
+        s += i  
+    assert s == 6
+    assert s == 5 + 1
+def test_third():
+    assert True
+"""
+        p = PythonTestIdentifier()
+        blames = TestExtractFunction._create_list_of_blames(t_content)
+        res = p.extract_test_functions(blames)
+        first_function = FunctionTest(name_test='test_first_test',
+                                      list_lines=blames[1:5])
+        second_function = FunctionTest(name_test='test_second_test',
+                                       list_lines=blames[6:12])
+        third_function = FunctionTest(name_test='test_third',
+                                      list_lines=blames[12:])
+
+        assert len(res) == 3
+        assert res[0].name_test == first_function.name_test
+        assert res[0].list_lines == first_function.list_lines
+
+        assert res[1].name_test == second_function.name_test
+        assert res[1].list_lines == second_function.list_lines
+
+        assert res[2].name_test == third_function.name_test
+        assert res[2].list_lines == third_function.list_lines
+
+    def test_contain_test_class(self):
+        assert False
