@@ -2,7 +2,7 @@ import glob
 import logging
 import os
 import re
-import subprocess
+from subprocess import Popen, PIPE
 from pathlib import Path
 from typing import Tuple, List
 
@@ -10,7 +10,8 @@ from testing_competition.contribution_counter import ContributionCounter
 from testing_competition.custom_types import ContributorResult, BlameLine
 from testing_competition.language_identifier import PythonTestIdentifier
 
-RE_PARSE_BLAME = re.compile(r'(?P<commit_hash>.+) \((?P<commit_author>.+)\s{1,}(?P<commit_date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) [\+\-]\d{4}\s*(?P<line_number>\d+)\)(?P<content>.*)')
+RE_PARSE_BLAME = re.compile(
+    r'(?P<commit_hash>.+) \((?P<commit_author>.+)\s{1,}(?P<commit_date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) [\+\-]\d{4}\s*(?P<line_number>\d+)\) (?P<content>.*)')
 NOT_COMMITTED_MSG = 'Not Committed Yet'
 
 
@@ -24,11 +25,13 @@ def get_git_blame(git_directory: Path, path_test: Path) -> List[BlameLine]:
     old_cwd = Path(os.getcwd()).resolve().absolute()
     os.chdir(git_directory)
     logger.debug(path_test)
-    p = subprocess.Popen(['git', 'blame', path_test],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE
-                         )
-    out, err = p.communicate()
+    p = Popen(
+        ['git', 'blame', path_test],
+        stdout=PIPE,
+        stderr=PIPE,
+    )
+    git_blame_timeout = 15
+    out, err = p.communicate(timeout=git_blame_timeout)
     if len(err) > 0:
         logger.warning(err.decode('utf8'))
     raw_blame_lines = out.splitlines()
